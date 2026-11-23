@@ -56,6 +56,8 @@ def main():
             "short_description": faker.paragraph(nb_sentences=rand.randint(1, 10)),
             "long_description": faker.paragraph(nb_sentences=rand.randint(1, 40)),
             "author": fake_authors(),
+            "copyright": int(f"20{rand.randint(1, 26):02}"),
+            "edition": rand.randint(1, 4),
             "no_of_pages": rand.randint(200, 700),})
 
     with open("book_catalogue.json", "w") as f:
