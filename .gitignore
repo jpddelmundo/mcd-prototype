@@ -1,2 +1,3 @@
 .venv/
 assets/metadata/
+__pycache__
