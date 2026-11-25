@@ -1,14 +1,41 @@
 services:
-  db:
+  mcapi:
+    # image: mcd-prototype-mcapi:latest
+    build:
+      context: mcapi
+      dockerfile: ../mcapi/Dockerfile
+    # command: "fastapi dev /app/mcapi/main.py --host 0.0.0.0"
+    ports:
+      - 9001:8000
+    volumes:
+      - ./mcapi:/app/mcapi
+    depends_on:
+      mcd:
+        condition: service_healthy
+    networks:
+      - mcd_network
+
+  mcd:
     image: mysql:8.0
     ports:
       - "${MYSQL_PORT:-3306}:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-admin}
       - MYSQL_DATABASE=${MYSQL_DATABASE:-mcd}
+    healthcheck:
+      test: ["CMD", "mysql", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-admin}"]
+      interval: 5s
+      retries: 5
+      start_period: 5s
     volumes: 
       - mysql_data:/var/lib/mysql
       - ./initdb:/docker-entrypoint-initdb.d
+    networks:
+      - mcd_network
 
 volumes:
   mysql_data:
+
+networks:
+  mcd_network:
+    driver: bridge
